@@ -1,0 +1,31 @@
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  dir: 'demo-2-gcp-cloud-storage'
+  args: ['build', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/svccloudstorage:$COMMIT_SHA', '.']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/svccloudstorage:$COMMIT_SHA']
+# Deploy container image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'beta'
+    - 'run'
+    - 'deploy'
+    - 'svc-cloudstorage'
+    - '--image'
+    - 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/svccloudstorage:$COMMIT_SHA'
+    - '--region'
+    - 'us-east1'
+    - '--platform'
+    - 'managed'
+    - '--min-instances'
+    - '0'
+    - '--max-instances'
+    - '1'
+    - '--allow-unauthenticated'
+    - '--service-account'
+    - 'sa-svc-cloudstorage@$PROJECT_ID.iam.gserviceaccount.com'
+images:
+- 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/svccloudstorage'
