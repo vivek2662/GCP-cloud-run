@@ -5,7 +5,7 @@ from google.cloud import storage
 
 app = Flask(__name__)
 
-bucket_name = "my-awesome-bucket-102"
+bucket_name = "my-awesome-bucket-108"
 
 storage_client = storage.Client()
 
